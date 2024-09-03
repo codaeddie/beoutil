@@ -23,8 +23,8 @@ package beoremote
 import (
 	"context"
 
-	"github.com/andy-js/beoutil/clients/beoremote/models"
-	"github.com/andy-js/beoutil/clients/rest"
+	"beoutil/clients/beoremote/models"
+	"beoutil/clients/rest"
 )
 
 type BeoDevice interface {

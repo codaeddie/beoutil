@@ -36,10 +36,10 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/andy-js/beoutil/clients/beoremote"
-	"github.com/andy-js/beoutil/clients/beoremote/models"
-	"github.com/andy-js/beoutil/clients/deezer"
-	deezerModels "github.com/andy-js/beoutil/clients/deezer/models"
+	"beoutil/clients/beoremote"
+	"beoutil/clients/beoremote/models"
+	"beoutil/clients/deezer"
+	deezerModels "beoutil/clients/deezer/models"
 	"github.com/urfave/cli/v2"
 )
 

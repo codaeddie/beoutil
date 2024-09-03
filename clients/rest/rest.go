@@ -28,7 +28,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/andy-js/beoutil/clients/beoremote/models"
+	"beoutil/clients/beoremote/models"
 )
 
 type Client interface {

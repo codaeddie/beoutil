@@ -1,4 +1,4 @@
-module github.com/andy-js/beoutil
+module beoutil
 
 go 1.18
 

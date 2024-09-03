@@ -24,8 +24,8 @@ import (
 	"context"
 	"io"
 
-	"github.com/andy-js/beoutil/clients/deezer/models"
-	"github.com/andy-js/beoutil/clients/rest"
+	"beoutil/clients/deezer/models"
+	"beoutil/clients/rest"
 )
 
 type AlbumIter interface {
