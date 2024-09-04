@@ -23,7 +23,7 @@ Alternatively, clone the repository and install it from the source:
 
 ```bash
 git clone https://github.com/andy-js/beoutil.git
-cd beoutil
+cd beoutil/beoutil
 go install
 ```
 
