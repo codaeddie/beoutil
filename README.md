@@ -16,14 +16,14 @@ integration with Deezer for music playback.
 To install **beoutil**, make sure you have [Go installed](https://golang.org/dl/) and run the following command:
 
 ```bash
-go install github.com/andy-js/beoutil/beoutil@latest
+go install github.com/andy-js/beoutil@latest
 ```
 
 Alternatively, clone the repository and install it from the source:
 
 ```bash
 git clone https://github.com/andy-js/beoutil.git
-cd beoutil/beoutil
+cd beoutil
 go install
 ```
 
