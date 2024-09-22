@@ -40,6 +40,7 @@ import (
 	"beoutil/clients/beoremote/models"
 	"beoutil/clients/deezer"
 	deezerModels "beoutil/clients/deezer/models"
+
 	"github.com/urfave/cli/v2"
 )
 
@@ -71,7 +72,7 @@ func doFindProducts(c *cli.Context) error {
 	return nil
 }
 
-func getCachedProducts() (map[string]*ProductDetails, error) {
+func getCachedProducts() (map[models.Jid]*ProductDetails, error) {
 	home := os.Getenv("HOME")
 	if home == "" {
 		return nil, errors.New("HOME is not set")
@@ -83,7 +84,7 @@ func getCachedProducts() (map[string]*ProductDetails, error) {
 	if err != nil {
 		return nil, err
 	}
-	var products map[string]*ProductDetails
+	var products map[models.Jid]*ProductDetails
 	if err = json.Unmarshal(b, &products); err != nil {
 		return nil, err
 	}
@@ -109,12 +110,12 @@ func joinIPs(ips []net.IP) string {
 	return b.String()
 }
 
-func getAllSystemProducts(ctx context.Context) (map[string]systemProduct, error) {
+func getAllSystemProducts(ctx context.Context) (map[models.Jid]systemProduct, error) {
 	cached, err := getCachedProducts()
 	if err != nil {
 		return nil, err
 	}
-	result := make(map[string]systemProduct)
+	result := make(map[models.Jid]systemProduct)
 	for _, c := range cached {
 		for _, ip := range c.IPs {
 			br := beoremote.NewClient(ip.String())
@@ -164,14 +165,14 @@ func doListProducts(c *cli.Context) error {
 			if role != "slave" {
 				state := "-"
 				if p.PrimaryExperience != nil {
-					state = p.PrimaryExperience.State
+					state = string(p.PrimaryExperience.State)
 				}
 				_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%t\t%s\n",
 					p.FriendlyName, role, joinIPs(p.IPs), p.Jid, p.Online, state)
 				if role == "master" {
 					slaveState := "-"
 					if products[p.Integrated.Jid].PrimaryExperience != nil {
-						slaveState = products[p.Integrated.Jid].PrimaryExperience.State
+						slaveState = string(products[p.Integrated.Jid].PrimaryExperience.State)
 					}
 					_, _ = fmt.Fprintf(tw, " + %s\t%s\t%s\t%s\t%t\t%s\n",
 						products[p.Integrated.Jid].FriendlyName, "slave",
@@ -365,7 +366,7 @@ func doGetQueue(c *cli.Context) error {
 			if qi.Id == q.PlayNowId {
 				marker = "------>"
 			}
-			id := strings.TrimPrefix(qi.Id, "plid-")
+			id := strings.TrimPrefix(string(qi.Id), "plid-")
 			_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n",
 				marker, id, qi.Track.Name, qi.Track.ArtistName)
 		}
@@ -494,7 +495,7 @@ func doSetActiveSource(c *cli.Context) error {
 		cli.ShowSubcommandHelpAndExit(c, 1)
 	}
 	br := beoremote.NewClient(args.First())
-	return br.BeoZone.PlaySource(c.Context, args.Get(1))
+	return br.BeoZone.PlaySource(c.Context, models.SourceID(args.Get(1)))
 }
 
 func doGetActiveSources(c *cli.Context) error {
@@ -531,7 +532,7 @@ func doAddListener(c *cli.Context) error {
 		cli.ShowSubcommandHelpAndExit(c, 1)
 	}
 	br := beoremote.NewClient(args.First())
-	return br.BeoZone.AddListener(c.Context, args.Get(1))
+	return br.BeoZone.AddListener(c.Context, models.Jid(args.Get(1)))
 }
 
 func doRemoveListener(c *cli.Context) error {
@@ -540,7 +541,7 @@ func doRemoveListener(c *cli.Context) error {
 		cli.ShowSubcommandHelpAndExit(c, 1)
 	}
 	br := beoremote.NewClient(args.First())
-	return br.BeoZone.RemoveListener(c.Context, args.Get(1))
+	return br.BeoZone.RemoveListener(c.Context, models.Jid(args.Get(1)))
 }
 
 func doSearchArtist(c *cli.Context) error {
@@ -621,17 +622,17 @@ func doListTracks(c *cli.Context) error {
 func getArtistImages(a *deezerModels.Artist) []models.Image {
 	return []models.Image{
 		{
-			Url:       a.PictureBig,
+			URL:       a.PictureBig,
 			Size:      models.Large,
 			MediaType: "image/jpg",
 		},
 		{
-			Url:       a.PictureMedium,
+			URL:       a.PictureMedium,
 			Size:      models.Medium,
 			MediaType: "image/jpg",
 		},
 		{
-			Url:       a.PictureSmall,
+			URL:       a.PictureSmall,
 			Size:      models.Small,
 			MediaType: "image/jpg",
 		},

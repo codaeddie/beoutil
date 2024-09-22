@@ -28,29 +28,49 @@ type SourceType struct {
 	Type string `json:"type"`
 }
 
-type Source struct {
-	Id           string     `json:"id"`
-	FriendlyName string     `json:"friendlyName,omitempty"`
-	SourceType   SourceType `json:"sourceType,omitempty"`
-	Category     string     `json:"category,omitempty"`
-	InUse        bool       `json:"inUse,omitempty"`
-	Profile      string     `json:"profile,omitempty"`
-	Linkable     bool       `json:"linkable,omitempty"`
+type SourceID string
+
+type ShortProduct struct {
+	Jid          Jid    `json:"jid"`
+	FriendlyName string `json:"friendlyName"`
 }
+
+type Source struct {
+	Id           SourceID     `json:"id"`
+	FriendlyName string       `json:"friendlyName,omitempty"`
+	SourceType   SourceType   `json:"sourceType,omitempty"`
+	Category     string       `json:"category,omitempty"`
+	InUse        bool         `json:"inUse,omitempty"`
+	Profile      string       `json:"profile,omitempty"`
+	Linkable     bool         `json:"linkable,omitempty"`
+	Product      ShortProduct `json:"product,omitempty"`
+}
+
+type Jid string
 
 type Integrated struct {
 	Role string `json:"role"`
-	Jid  string `json:"jid"`
+	Jid  Jid    `json:"jid"`
 }
 
+type State string
+
+const (
+	StateIdle      State = "idle"
+	StatePreparing State = "preparing"
+	StatePlay      State = "play"
+	StatePause     State = "pause"
+	StateStop      State = "stop"
+)
+
 type ProductPrimaryExperience struct {
-	Source   Source   `json:"source"`
-	Listener []string `json:"listener"`
-	State    string   `json:"state"`
+	Source   Source `json:"source"`
+	Listener []Jid  `json:"listener"`
+	State    State  `json:"state"`
 }
 
 type Product struct {
-	Jid               string                    `json:"jid"`
+	Jid               Jid                       `json:"jid"`
 	FriendlyName      string                    `json:"friendlyName"`
 	Online            bool                      `json:"online"`
 	PrimaryExperience *ProductPrimaryExperience `json:"primaryExperience"`
@@ -102,7 +122,7 @@ const (
 )
 
 type Image struct {
-	Url       string `json:"url"`
+	URL       string `json:"url"`
 	Size      Size   `json:"size"`
 	MediaType string `json:"mediatype"`
 }
@@ -144,11 +164,13 @@ type Station struct {
 	Image    []Image  `json:"image"`
 }
 
+type PlayQueueItemID string
+
 type PlayQueueItem struct {
-	Id        string    `json:"id,omitempty"` // Included in the Track for instantPlay
-	Behaviour Behaviour `json:"behaviour"`
-	Track     *Track    `json:"track,omitempty"`
-	Station   *Station  `json:"station,omitempty"`
+	Id        PlayQueueItemID `json:"id,omitempty"` // Included in the Track for instantPlay
+	Behaviour Behaviour       `json:"behaviour"`
+	Track     *Track          `json:"track,omitempty"`
+	Station   *Station        `json:"station,omitempty"`
 }
 
 type Repeat string
@@ -179,13 +201,20 @@ type Container struct {
 	Deezer Deezer `json:"deezer"`
 }
 
+type PlayQueueID string
+
+const (
+	PlayQueueIDMusic  PlayQueueID = "music"
+	PlayQueueIDDeezer PlayQueueID = "deezer"
+)
+
 type PlayQueue struct {
-	Id            string          `json:"id,omitempty"`
+	Id            PlayQueueID     `json:"id,omitempty"`
 	Offset        int             `json:"offset,omitempty"`
 	Count         int             `json:"count,omitempty"`
 	StartOffset   int             `json:"startOffset,omitempty"`
 	Total         int             `json:"total,omitempty"`
-	PlayNowId     string          `json:"playNowId,omitempty"`
+	PlayNowId     PlayQueueItemID `json:"playNowId,omitempty"`
 	Random        Random          `json:"random,omitempty"`
 	Repeat        Repeat          `json:"repeat,omitempty"`
 	PlayQueueItem []PlayQueueItem `json:"playQueueItem"`
@@ -231,13 +260,8 @@ type EmbeddedBinary struct {
 	SchemeList []string `json:"schemeList"`
 }
 
-type ShortProduct struct {
-	Jid          string `json:"jid"`
-	FriendlyName string `json:"friendlyName"`
-}
-
 type Listener struct {
-	Jid string `json:"jid"`
+	Jid Jid `json:"jid"`
 }
 
 type ListenerList struct {
@@ -245,8 +269,8 @@ type ListenerList struct {
 }
 
 type ActiveSources struct {
-	Primary    string `json:"primary"`
-	PrimaryJid string `json:"primaryJid"`
+	Primary    SourceID `json:"primary"`
+	PrimaryJid Jid      `json:"primaryJid"`
 }
 
 type PrimaryExperience struct {

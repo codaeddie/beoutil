@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -150,6 +151,10 @@ type Event struct {
 	Err   error
 }
 
+func isEOF(err error) bool {
+	return errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF)
+}
+
 func processEvents(ctx context.Context, rc io.ReadCloser, events chan<- Event) {
 	defer func() { _ = rc.Close() }()
 	defer close(events)
@@ -161,7 +166,7 @@ func processEvents(ctx context.Context, rc io.ReadCloser, events chan<- Event) {
 		case <-ctx.Done():
 			return
 		case events <- Event{Value: m, Err: err}:
-			if err == io.EOF {
+			if isEOF(err) {
 				return
 			}
 		}

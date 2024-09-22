@@ -58,9 +58,10 @@ type BeoZone interface {
 	SetQueueRepeat(ctx context.Context, repeat models.Repeat) error
 	SetQueueRandom(ctx context.Context, random models.Random) error
 	GetActiveSources(ctx context.Context) (*models.ActiveSourcesResponse, error)
-	PlaySource(ctx context.Context, sourceID string) error
-	AddListener(ctx context.Context, jid string) error
-	RemoveListener(ctx context.Context, jid string) error
+	PlaySource(ctx context.Context, sourceID models.SourceID) error
+	AddListener(ctx context.Context, jid models.Jid) error
+	RemoveListener(ctx context.Context, jid models.Jid) error
+	EndExperience(ctx context.Context) error
 	GetSystemProducts(ctx context.Context) ([]models.Product, error)
 	OpenNotificationStream(ctx context.Context) (<-chan rest.Event, error)
 }
@@ -248,7 +249,7 @@ func (z *beoZone) GetActiveSources(ctx context.Context) (*models.ActiveSourcesRe
 	return r, nil
 }
 
-func (z *beoZone) PlaySource(ctx context.Context, sourceID string) error {
+func (z *beoZone) PlaySource(ctx context.Context, sourceID models.SourceID) error {
 	r := models.ActiveSourcesRequest{
 		PrimaryExperience: models.PrimaryExperience{
 			Source: models.Source{
@@ -260,7 +261,7 @@ func (z *beoZone) PlaySource(ctx context.Context, sourceID string) error {
 	return err
 }
 
-func (z *beoZone) AddListener(ctx context.Context, jid string) error {
+func (z *beoZone) AddListener(ctx context.Context, jid models.Jid) error {
 	r := models.PrimaryExperienceRequest{
 		Listener: models.Listener{
 			Jid: jid,
@@ -270,9 +271,14 @@ func (z *beoZone) AddListener(ctx context.Context, jid string) error {
 	return err
 }
 
-func (z *beoZone) RemoveListener(ctx context.Context, jid string) error {
+func (z *beoZone) RemoveListener(ctx context.Context, jid models.Jid) error {
 	endPointFmt := "/BeoZone/Zone/ActiveSources/primaryExperience?jid=%s"
-	_, err := z.client.DoDelete(ctx, z.baseURL+fmt.Sprintf(endPointFmt, url.QueryEscape(jid)))
+	_, err := z.client.DoDelete(ctx, z.baseURL+fmt.Sprintf(endPointFmt, url.QueryEscape(string(jid))))
+	return err
+}
+
+func (z *beoZone) EndExperience(ctx context.Context) error {
+	_, err := z.client.DoDelete(ctx, z.baseURL+"/BeoZone/Zone/ActiveSources/primaryExperience")
 	return err
 }
 
