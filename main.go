@@ -45,10 +45,8 @@ import (
 )
 
 func getHomeDir() (string, error) {
-	fmt.Println("getHomeDir() called")
 	home, err := os.UserHomeDir()
 	if err !=nil {
-		fmt.Printf("Error in getHomeDir: %v\n", err)
 		return "", fmt.Errorf("Failed to get user home dir: %w", err)
 	}
 	fmt.Printf("Home dir found: %s\n", home)
@@ -100,16 +98,6 @@ func getCachedProducts() (map[models.Jid]*ProductDetails, error) {
 		return nil, err
 	}
 	return products, nil
-}
-
-
-func testGetHomeDir() {
-	home, err := getHomeDir()
-	if err != nil {
-		fmt.Printf("Error in testGetHomeDir: %\n", err)
-	} else {
-		fmt.Printf("Home directory in test: %\n", home)
-	}
 }
 
 type systemProduct struct {
@@ -831,7 +819,6 @@ retry:
 }
 
 func main() {
-	testGetHomeDir()
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 	app := &cli.App{
