@@ -44,13 +44,24 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+func getHomeDir() (string, error) {
+	fmt.Println("getHomeDir() called")
+	home, err := os.UserHomeDir()
+	if err !=nil {
+		fmt.Printf("Error in getHomeDir: %v\n", err)
+		return "", fmt.Errorf("Failed to get user home dir: %w", err)
+	}
+	fmt.Printf("Home dir found: %s\n", home)
+	return home, nil
+}
+
 func doFindProducts(c *cli.Context) error {
 	if c.NArg() != 0 {
 		cli.ShowSubcommandHelpAndExit(c, 1)
 	}
-	home := os.Getenv("HOME")
-	if home == "" {
-		return errors.New("HOME is not set")
+	home, err := getHomeDir()
+	if err != nil {
+		return err
 	}
 	_, _ = fmt.Fprintf(os.Stderr, "Scanning for products...\n")
 	ctx, cancel := context.WithTimeout(context.Background(), c.Duration("timeout"))
@@ -73,9 +84,9 @@ func doFindProducts(c *cli.Context) error {
 }
 
 func getCachedProducts() (map[models.Jid]*ProductDetails, error) {
-	home := os.Getenv("HOME")
-	if home == "" {
-		return nil, errors.New("HOME is not set")
+	home, err := getHomeDir()
+	if err != nil {
+		return nil, err
 	}
 	b, err := os.ReadFile(filepath.Join(home, ".beoutil"))
 	if os.IsNotExist(err) {
@@ -89,6 +100,16 @@ func getCachedProducts() (map[models.Jid]*ProductDetails, error) {
 		return nil, err
 	}
 	return products, nil
+}
+
+
+func testGetHomeDir() {
+	home, err := getHomeDir()
+	if err != nil {
+		fmt.Printf("Error in testGetHomeDir: %\n", err)
+	} else {
+		fmt.Printf("Home directory in test: %\n", home)
+	}
 }
 
 type systemProduct struct {
@@ -810,6 +831,7 @@ retry:
 }
 
 func main() {
+	testGetHomeDir()
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 	app := &cli.App{
